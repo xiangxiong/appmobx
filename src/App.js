@@ -4,12 +4,11 @@ import './App.css';
 import {observer,inject} from 'mobx-react';
 import DevTools from 'mobx-react-devtools';
 import {configure} from 'mobx';
-import Fun from './Fun';
-
+import TodoList from './components/TodoList';
+import Topic from './components/Topic';
+import ReviewApp from './components/ReviewApp';
 
 configure({ enforceActions:"observed"});
-
-
 class App extends React.Component{
 
   handleSubmit=(e)=>{
@@ -26,12 +25,14 @@ class App extends React.Component{
   }
 
   render(){
-    console.log('props',this.props);
     return (
-      <div className="App">
+      <div className="container">
+        <ReviewApp/>
         <DevTools/>
         <header className="App-header">
           {/* <Fun/> */}
+          <Topic/>
+          <TodoList/>
           <p> firstBird:{this.props.BirdStore.firstBird} </p>
           {/* <p> birdCount:{this.props.BirdStore.birdCount} </p> */}
           <form onSubmit={e=>this.handleSubmit(e)}>

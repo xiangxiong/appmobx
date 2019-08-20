@@ -167,7 +167,136 @@ inject('BirdStore','TodoListStore')(observer(App));
 
 #18 extendObservable 如何用
 ```
+@observer
+class TodoList extends Component{
+    constructor(){
+        super();
+
+        extendObservable(this,{
+            newTodoTile:"",
+            handleInputChange:action((e)=>{
+                this.newTodoTile = e.target.value
+            })
+        })
+    }
+}
+```
+## #19 在 class component 中使用 mbox 实现 todolist（二更）
+```
+const Todo = observer(({todo}) => {
+    return (
+        <li>
+            <input 
+            type="checkbox"
+            checked={todo.finished}
+            onChange={action(()=>{
+                todo.finished = !todo.finished
+            })}/>
+            {todo.title}
+        </li>
+    )
+})
+```
+
+### #20 开始使用异步
+```
+  @action
+    loadTopics(){
+        fetch("http://yapi.demo.qunar.com/mock/65279/api/v1/product/owner")
+        .then(response=>response.json())
+        .then(data=>{
+            this.saveTopics(data.content[0]['projectName']);
+            // this.topics = data;
+            console.log('data',data);
+        })
+    }
+
+    @action
+    saveTopics(data){
+        this.topics = data
+    }
+
+ <div>
+                Topic
+                <button onClick={()=>{
+                    this.props.TopicStore.loadTopics()
+                }}>Get Topic</button>
+                <p>
+                {
+                    this.props.TopicStore.topics && this.props.TopicStore.topics
+                }
+                </p>
+ </div>
+```
+
+#21 三种不同的异步方式（二更）
+```
 
 ```
 
+#22 再说异步
+```
+   loadTopicInLine(){
+        fetch("http://yapi.demo.qunar.com/mock/65279/api/v1/product/owner")
+        .then(response=>response.json())
+        .then(data=>{
+            runInAction(()=>{
+                this.saveTopics(data.content[0]['projectName']);
+            })
+            // this.topics = data;
+            console.log('data',data);
+        })
+    }
 
+    // 第三种方式
+    loadTopicsAsync = async () =>{
+        const response = await fetch("http://yapi.demo.qunar.com/mock/65279/api/v1/product/owner")
+        const json = await response.json;
+        runInAction(()=>{
+            this.topics = json.data;
+        })
+    }
+
+    // 第四种方法.
+    loadTopicGennerator = flow(function*(){
+        const response = yield fetch("http://yapi.demo.qunar.com/mock/65279/api/v1/product/owner");
+        const json = yield response.json();
+        this.topics = json.data;
+    })
+```
+
+#23 异步 - 错误处理（二更）
+```
+     try{
+            const response = yield fetch("http://eeeyapi.demo.qunar.com/mock/65279/api/v1/product/owner");
+            const json = yield response.json();
+            this.topics = json.content[0]['projectName'];
+            this.loading = false;
+        }
+        catch(err){
+            console.dir(err.message);
+            this.error = err.message;
+        }
+
+    const store = this.props.TopicStore;
+        let data;
+        if(store.error){
+            data = store.error
+        }
+        else if(store.loading){
+            data = "loading";
+        }else{
+            data = store.topics ;
+     }
+
+```
+
+### # 调试工具、action.bound、reaction、when（下节开始实战部分).
+
+### #25 项目实战 - 创建好页面和组
+
+```
+
+```
+
+ 
